@@ -1,17 +1,33 @@
 import React, { useState } from "react";
 
-let basicGrid = [
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", "", "", ""],
-];
+// let basicGrid = [
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+//   ["", "", "", "", "", "", "", "", "", ""],
+// ];
+
+//let basicGrid = (gridSize = [20, 20]) => Array(gridSize[0]).fill(Array(gridSize[1]).fill(""));
+
+function makeArray(w=15, h=15, val="") {
+  var arr = [];
+  for(let i = 0; i < h; i++) {
+      arr[i] = [];
+      for(let j = 0; j < w; j++) {
+          arr[i][j] = val;
+      }
+  }
+  return arr;
+}
+
+let basicGrid = makeArray()
+
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -30,18 +46,16 @@ function checkAround(row, col, arr) {
     [row + 1, col],
     [row + 1, col + 1],
   ];
-  
+
   fieldsToCheck.forEach((field) => {
-    let row = Number(field[0])
-    let col = Number(field[1])
-    if(row>=0 && col>=0 && row<arr.length && col<arr[0].length ) {
+    let row = Number(field[0]);
+    let col = Number(field[1]);
+    if (row >= 0 && col >= 0 && row < arr.length && col < arr[0].length) {
       if (arr[row][col] === "M") {
-      count++;
+        count++;
+      }
     }
-    }
-    
   });
-  console.log(fieldsToCheck)
   return count;
 }
 
@@ -50,19 +64,13 @@ function Grid() {
   const [rightClicks, setRightClicks] = useState([]);
   const [grid, setGrid] = useState(basicGrid);
 
-  function generateGrid(gridSize = [10, 20]) {
-    let newGrid = Array(gridSize[0]).fill(Array(gridSize[1]).fill(""));
-    setGrid(newGrid);
-  }
 
   function generateMines() {
     let mines = [];
     let numOfMines = (grid.length * grid[0].length) / 5;
 
     while (mines.length < numOfMines) {
-      let mine =
-        String(getRandomInt(grid.length)) +
-        String(getRandomInt(grid[0].length));
+      let mine = [getRandomInt(grid.length), getRandomInt(grid[0].length)];
       if (!mines.includes(mine)) {
         mines.push(mine);
         console.log(mines);
@@ -73,9 +81,11 @@ function Grid() {
 
   function addMinesToGrid(mines) {
     let tempGrid = [...grid];
+    console.table(tempGrid);
     mines.forEach((mine) => {
       tempGrid[mine[0]][mine[1]] = "M";
     });
+    console.table(tempGrid);
     setGrid(tempGrid);
   }
 
@@ -84,7 +94,9 @@ function Grid() {
     tempGrid.forEach((row, rowIndex) =>
       row.forEach((square, squareIndex) => {
         if (square !== "M") {
-          tempGrid[rowIndex][squareIndex] = String(checkAround(rowIndex, squareIndex, tempGrid));
+          tempGrid[rowIndex][squareIndex] = String(
+            checkAround(rowIndex, squareIndex, tempGrid)
+          );
         }
       })
     );
@@ -94,7 +106,6 @@ function Grid() {
   function handleStart() {
     setLeftClicks([]);
     setRightClicks([]);
-    //generateGrid()
     addMinesToGrid(generateMines());
     addNumsToGrid();
   }
@@ -132,13 +143,6 @@ function Grid() {
           onClick={() => handleStart()}
         >
           Start
-        </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => generateGrid()}
-        >
-          Grid
         </button>
       </div>
       <div className="d-flex justify-content-center">
@@ -185,6 +189,9 @@ function Grid() {
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="mt-20">
+        <p> </p>
       </div>
     </>
   );
