@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-let grid = [
+let basicGrid = [
   ["", "", "", "", "", "", "", "", "", ""],
   ["", "", "", "", "", "", "", "", "", ""],
   ["", "", "", "", "", "", "", "", "", ""],
@@ -13,38 +13,91 @@ let grid = [
   ["", "", "", "", "", "", "", "", "", ""],
 ];
 
-function handleStart() {
-  addMinesToGrid(grid, generateMines());
-}
-
-function addMinesToGrid(grid, mines) {
-  mines.forEach((mine) => {
-    grid[mine[0]][mine[1]] = "M";
-  });
-}
-
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-function generateMines(gridSize = [10, 10]) {
-  let mines = [];
-  let numOfMines = (Number(gridSize[0]) * Number(gridSize[1])) / 5;
-
-  while (mines.length < numOfMines) {
-    let mine =
-      String(getRandomInt(gridSize[0])) + String(getRandomInt(gridSize[1]));
-    if (!mines.includes(mine)) {
-      mines.push(mine);
-      console.log(mines);
+function checkAround(row, col, arr) {
+  let count = 0;
+  let fieldsToCheck = [
+    [row - 1, col - 1],
+    [row - 1, col],
+    [row - 1, col + 1],
+    [row, col - 1],
+    [row, col],
+    [row, col + 1],
+    [row + 1, col - 1],
+    [row + 1, col],
+    [row + 1, col + 1],
+  ];
+  
+  fieldsToCheck.forEach((field) => {
+    let row = Number(field[0])
+    let col = Number(field[1])
+    if(row>=0 && col>=0 && row<arr.length && col<arr[0].length ) {
+      if (arr[row][col] === "M") {
+      count++;
     }
-  }
-  return mines;
+    }
+    
+  });
+  console.log(fieldsToCheck)
+  return count;
 }
 
 function Grid() {
   const [leftClicks, setLeftClicks] = useState([]);
   const [rightClicks, setRightClicks] = useState([]);
+  const [grid, setGrid] = useState(basicGrid);
+
+  function generateGrid(gridSize = [10, 20]) {
+    let newGrid = Array(gridSize[0]).fill(Array(gridSize[1]).fill(""));
+    setGrid(newGrid);
+  }
+
+  function generateMines() {
+    let mines = [];
+    let numOfMines = (grid.length * grid[0].length) / 5;
+
+    while (mines.length < numOfMines) {
+      let mine =
+        String(getRandomInt(grid.length)) +
+        String(getRandomInt(grid[0].length));
+      if (!mines.includes(mine)) {
+        mines.push(mine);
+        console.log(mines);
+      }
+    }
+    return mines;
+  }
+
+  function addMinesToGrid(mines) {
+    let tempGrid = [...grid];
+    mines.forEach((mine) => {
+      tempGrid[mine[0]][mine[1]] = "M";
+    });
+    setGrid(tempGrid);
+  }
+
+  function addNumsToGrid() {
+    let tempGrid = [...grid];
+    tempGrid.forEach((row, rowIndex) =>
+      row.forEach((square, squareIndex) => {
+        if (square !== "M") {
+          tempGrid[rowIndex][squareIndex] = String(checkAround(rowIndex, squareIndex, tempGrid));
+        }
+      })
+    );
+    setGrid(tempGrid);
+  }
+
+  function handleStart() {
+    setLeftClicks([]);
+    setRightClicks([]);
+    //generateGrid()
+    addMinesToGrid(generateMines());
+    addNumsToGrid();
+  }
 
   function handleLeftClick(e) {
     setLeftClicks([
@@ -79,6 +132,13 @@ function Grid() {
           onClick={() => handleStart()}
         >
           Start
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => generateGrid()}
+        >
+          Grid
         </button>
       </div>
       <div className="d-flex justify-content-center">
