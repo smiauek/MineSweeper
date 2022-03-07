@@ -19,7 +19,9 @@ function App() {
           <Route path="/" element={<ChooseGrid />} />
           <Route
             path="/play"
-            element={<Grid width={width} heigth={heigth} />}
+            element={
+              <Grid width={width ? width : 15} heigth={heigth ? heigth : 15} />
+            }
           />
           <Route element={<NotFound />} />
         </Routes>
