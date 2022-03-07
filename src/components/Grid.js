@@ -4,11 +4,22 @@ import generateMines from "../utils/generateMines";
 import checkAround from "../utils/checkAround";
 
 function Grid({ width, heigth }) {
-  let basicGrid = generateGrid(width, heigth);
+  let newGrid = generateGrid(width, heigth);
 
   const [leftClicks, setLeftClicks] = useState([]);
   const [rightClicks, setRightClicks] = useState([]);
-  const [grid, setGrid] = useState(basicGrid);
+  const [grid, setGrid] = useState(newGrid);
+  const [lose, setLose] = useState(false);
+
+  function emptyGrid(grid, val = "") {
+    let tempGrid = [...grid]
+    for (let i = 0; i < tempGrid.length; i++) {
+      for (let j = 0; j < tempGrid[i].length; j++) {
+        tempGrid[i][j] = val;
+      }
+    }
+    return tempGrid;
+  }
 
   function addMinesToGrid(mines) {
     let tempGrid = [...grid];
@@ -33,8 +44,10 @@ function Grid({ width, heigth }) {
   }
 
   function handleStart() {
+    setLose(false);
     setLeftClicks([]);
     setRightClicks([]);
+    setGrid(emptyGrid(grid))
     addMinesToGrid(generateMines(grid));
     addNumsToGrid();
   }
@@ -43,8 +56,9 @@ function Grid({ width, heigth }) {
     let row = e.target.parentNode.parentNode.id;
     let col = e.target.parentNode.id;
     setLeftClicks([...leftClicks, `${row}:${col}`]);
-    console.log(leftClicks);
-    console.log(`clicked button ${row}, ${col}`);
+    if (grid[row][col] === "M") {
+      setLose(true);
+    }
   }
 
   function handleRightClick(e) {
@@ -66,9 +80,20 @@ function Grid({ width, heigth }) {
           className="btn btn-primary"
           onClick={() => handleStart()}
         >
-          Start
+          {lose ? "Restart" : "Start"}
         </button>
       </div>
+      {lose ? (
+        <div
+          className="alert alert-danger d-flex justify-content-center"
+          role="alert"
+        >
+          Kaboom!!! You hit a mine!!!
+        </div>
+      ) : (
+        <></>
+      )}
+
       <div className="d-flex justify-content-center">
         <table className="table-bordered border-dark ">
           <tbody>
@@ -88,6 +113,7 @@ function Grid({ width, heigth }) {
                         onClick={(e) => handleLeftClick(e)}
                         onAuxClick={(e) => handleRightClick(e)}
                         onContextMenu={(e) => e.preventDefault()}
+                        disabled={lose}
                       >
                         {rightClicks.includes(
                           `${String(rowIndex)}:${String(colIndex)}`
