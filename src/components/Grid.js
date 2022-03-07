@@ -1,33 +1,5 @@
 import React, { useState } from "react";
-
-// let basicGrid = [
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-//   ["", "", "", "", "", "", "", "", "", ""],
-// ];
-
-//let basicGrid = (gridSize = [20, 20]) => Array(gridSize[0]).fill(Array(gridSize[1]).fill(""));
-
-function makeArray(w=15, h=15, val="") {
-  var arr = [];
-  for(let i = 0; i < h; i++) {
-      arr[i] = [];
-      for(let j = 0; j < w; j++) {
-          arr[i][j] = val;
-      }
-  }
-  return arr;
-}
-
-let basicGrid = makeArray()
-
+import generateGrid from "../utils/generateGrid";
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -59,11 +31,12 @@ function checkAround(row, col, arr) {
   return count;
 }
 
-function Grid() {
+function Grid({ width, heigth }) {
+  let basicGrid = generateGrid(width, heigth);
+
   const [leftClicks, setLeftClicks] = useState([]);
   const [rightClicks, setRightClicks] = useState([]);
   const [grid, setGrid] = useState(basicGrid);
-
 
   function generateMines() {
     let mines = [];
@@ -146,7 +119,7 @@ function Grid() {
         </button>
       </div>
       <div className="d-flex justify-content-center">
-        <table className="table-bordered border-dark">
+        <table className="table-bordered border-dark ">
           <tbody>
             {grid.map((row, rowIndex) => (
               <tr key={rowIndex} id={rowIndex} style={{ height: 30 }}>
