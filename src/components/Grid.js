@@ -10,15 +10,25 @@ function Grid({ width, heigth }) {
   const [rightClicks, setRightClicks] = useState([]);
   const [grid, setGrid] = useState(newGrid);
   const [lose, setLose] = useState(false);
+  const [win, setWin] = useState(false);
 
   function emptyGrid(grid, val = "") {
-    let tempGrid = [...grid]
+    let tempGrid = [...grid];
     for (let i = 0; i < tempGrid.length; i++) {
       for (let j = 0; j < tempGrid[i].length; j++) {
         tempGrid[i][j] = val;
       }
     }
     return tempGrid;
+  }
+
+  function checkWin() {
+    let maxClicks = Number(width) * Number(heigth);
+    let currentClicks = leftClicks.length + rightClicks.length;
+
+    if (currentClicks + 1 === maxClicks) {
+      setWin(true);
+    }
   }
 
   function addMinesToGrid(mines) {
@@ -45,9 +55,10 @@ function Grid({ width, heigth }) {
 
   function handleStart() {
     setLose(false);
+    setWin(false);
     setLeftClicks([]);
     setRightClicks([]);
-    setGrid(emptyGrid(grid))
+    setGrid(emptyGrid(grid));
     addMinesToGrid(generateMines(grid));
     addNumsToGrid();
   }
@@ -58,6 +69,8 @@ function Grid({ width, heigth }) {
     setLeftClicks([...leftClicks, `${row}:${col}`]);
     if (grid[row][col] === "M") {
       setLose(true);
+    } else {
+      checkWin();
     }
   }
 
@@ -70,6 +83,7 @@ function Grid({ width, heigth }) {
     } else {
       setRightClicks([...rightClicks, flag]);
     }
+    checkWin();
   }
 
   return (
@@ -89,6 +103,16 @@ function Grid({ width, heigth }) {
           role="alert"
         >
           Kaboom!!! You hit a mine!!!
+        </div>
+      ) : (
+        <></>
+      )}
+      {win ? (
+        <div
+          className="alert alert-success d-flex justify-content-center"
+          role="alert"
+        >
+          Succes!!! You found all the mines!
         </div>
       ) : (
         <></>
