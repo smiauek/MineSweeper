@@ -8,6 +8,8 @@ export default function generateMines(grid) {
 
   while (mines.length < numOfMines) {
     let mine = [getRandomInt(grid.length), getRandomInt(grid[0].length)];
+
+    //this if statement doesn't work right as icludes method doesn't find array in array of arrays
     if (!mines.includes(mine)) {
       mines.push(mine);
     }
