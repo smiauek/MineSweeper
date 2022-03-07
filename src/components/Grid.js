@@ -12,11 +12,9 @@ function Grid({ width, heigth }) {
 
   function addMinesToGrid(mines) {
     let tempGrid = [...grid];
-
     mines.forEach((mine) => {
       tempGrid[mine[0]][mine[1]] = "M";
     });
-
     setGrid(tempGrid);
   }
 
