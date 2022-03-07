@@ -84,20 +84,21 @@ function Grid({ width, heigth }) {
   }
 
   function handleLeftClick(e) {
+    let row = e.target.parentNode.parentNode.id
+    let col = e.target.parentNode.id
     setLeftClicks([
       ...leftClicks,
-      e.target.parentNode.parentNode.id + e.target.parentNode.id,
+      `${row}:${col}`
     ]);
     console.log(leftClicks);
     console.log(
-      `clicked button ${e.target.parentNode.parentNode.id}, ${e.target.parentNode.id}`
+      `clicked button ${row}, ${col}`
     );
   }
 
   function handleRightClick(e) {
     const flag =
-      e.currentTarget.parentElement.parentElement.id +
-      e.currentTarget.parentElement.id;
+      `${e.currentTarget.parentElement.parentElement.id}:${e.currentTarget.parentElement.id}`;
     if (rightClicks.includes(flag)) {
       const tempRightClicks = rightClicks;
       tempRightClicks.splice(tempRightClicks.indexOf(flag), 1);
@@ -126,7 +127,7 @@ function Grid({ width, heigth }) {
                 {row.map((square, colIndex) => (
                   <td key={colIndex} id={colIndex} style={{ width: 30 }}>
                     {leftClicks.includes(
-                      String(rowIndex) + String(colIndex)
+                      `${String(rowIndex)}:${String(colIndex)}`
                     ) ? (
                       <p style={{ margin: 1, textAlign: "center" }}>{square}</p>
                     ) : (
@@ -139,7 +140,7 @@ function Grid({ width, heigth }) {
                         onContextMenu={(e) => e.preventDefault()}
                       >
                         {rightClicks.includes(
-                          String(rowIndex) + String(colIndex)
+                          `${String(rowIndex)}:${String(colIndex)}`
                         ) ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
