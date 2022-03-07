@@ -1,35 +1,7 @@
 import React, { useState } from "react";
 import generateGrid from "../utils/generateGrid";
-
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
-
-function checkAround(row, col, arr) {
-  let count = 0;
-  let fieldsToCheck = [
-    [row - 1, col - 1],
-    [row - 1, col],
-    [row - 1, col + 1],
-    [row, col - 1],
-    [row, col],
-    [row, col + 1],
-    [row + 1, col - 1],
-    [row + 1, col],
-    [row + 1, col + 1],
-  ];
-
-  fieldsToCheck.forEach((field) => {
-    let row = Number(field[0]);
-    let col = Number(field[1]);
-    if (row >= 0 && col >= 0 && row < arr.length && col < arr[0].length) {
-      if (arr[row][col] === "M") {
-        count++;
-      }
-    }
-  });
-  return count;
-}
+import generateMines from "../utils/generateMines";
+import checkAround from "../utils/checkAround";
 
 function Grid({ width, heigth }) {
   let basicGrid = generateGrid(width, heigth);
@@ -38,27 +10,13 @@ function Grid({ width, heigth }) {
   const [rightClicks, setRightClicks] = useState([]);
   const [grid, setGrid] = useState(basicGrid);
 
-  function generateMines() {
-    let mines = [];
-    let numOfMines = (grid.length * grid[0].length) / 5;
-
-    while (mines.length < numOfMines) {
-      let mine = [getRandomInt(grid.length), getRandomInt(grid[0].length)];
-      if (!mines.includes(mine)) {
-        mines.push(mine);
-        console.log(mines);
-      }
-    }
-    return mines;
-  }
-
   function addMinesToGrid(mines) {
     let tempGrid = [...grid];
-    console.table(tempGrid);
+
     mines.forEach((mine) => {
       tempGrid[mine[0]][mine[1]] = "M";
     });
-    console.table(tempGrid);
+
     setGrid(tempGrid);
   }
 
@@ -79,26 +37,20 @@ function Grid({ width, heigth }) {
   function handleStart() {
     setLeftClicks([]);
     setRightClicks([]);
-    addMinesToGrid(generateMines());
+    addMinesToGrid(generateMines(grid));
     addNumsToGrid();
   }
 
   function handleLeftClick(e) {
-    let row = e.target.parentNode.parentNode.id
-    let col = e.target.parentNode.id
-    setLeftClicks([
-      ...leftClicks,
-      `${row}:${col}`
-    ]);
+    let row = e.target.parentNode.parentNode.id;
+    let col = e.target.parentNode.id;
+    setLeftClicks([...leftClicks, `${row}:${col}`]);
     console.log(leftClicks);
-    console.log(
-      `clicked button ${row}, ${col}`
-    );
+    console.log(`clicked button ${row}, ${col}`);
   }
 
   function handleRightClick(e) {
-    const flag =
-      `${e.currentTarget.parentElement.parentElement.id}:${e.currentTarget.parentElement.id}`;
+    const flag = `${e.currentTarget.parentElement.parentElement.id}:${e.currentTarget.parentElement.id}`;
     if (rightClicks.includes(flag)) {
       const tempRightClicks = rightClicks;
       tempRightClicks.splice(tempRightClicks.indexOf(flag), 1);
